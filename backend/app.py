@@ -88,9 +88,32 @@ def list_tasks():
     if priority:
         tasks = [task for task in tasks if task.get("priority") == priority]
     if subject:
-        tasks = [task for task in tasks if task.get("subject") == subject]
+        normalized_subject = subject.strip().lower()
+        tasks = [
+            task
+            for task in tasks
+            if normalized_subject in str(task.get("subject", "")).lower()
+        ]
 
     return jsonify(tasks)
+
+
+@app.get("/tasks/summary")
+def task_summary():
+    tasks = load_tasks()
+    total = len(tasks)
+    pendientes = len([task for task in tasks if task.get("status") == "pendiente"])
+    finalizadas = len([task for task in tasks if task.get("status") == "finalizada"])
+    alta_prioridad = len([task for task in tasks if task.get("priority") == "alta"])
+
+    return jsonify(
+        {
+            "total": total,
+            "pendientes": pendientes,
+            "finalizadas": finalizadas,
+            "alta_prioridad": alta_prioridad,
+        }
+    )
 
 
 @app.get("/tasks/<task_id>")
@@ -154,24 +177,6 @@ def delete_task(task_id: str):
 
     save_tasks(new_tasks)
     return jsonify({"deleted": True})
-
-
-@app.get("/tasks/summary")
-def task_summary():
-    tasks = load_tasks()
-    total = len(tasks)
-    pendientes = len([task for task in tasks if task.get("status") == "pendiente"])
-    finalizadas = len([task for task in tasks if task.get("status") == "finalizada"])
-    alta_prioridad = len([task for task in tasks if task.get("priority") == "alta"])
-
-    return jsonify(
-        {
-            "total": total,
-            "pendientes": pendientes,
-            "finalizadas": finalizadas,
-            "alta_prioridad": alta_prioridad,
-        }
-    )
 
 
 if __name__ == "__main__":

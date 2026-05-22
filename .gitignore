@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+backend/.venv/
+backend/.deps/
 env/
 venv/
 .env

@@ -78,7 +78,7 @@ const ui = {
   summaryHigh: assertElement(summaryHigh, "Resumen alta prioridad no encontrado"),
 };
 
-function setEditing(task: Task | null) {
+function setEditing(task: Task | null): void {
   if (task) {
     editingId = task.id;
     ui.titleInput.value = task.title;
@@ -89,17 +89,18 @@ function setEditing(task: Task | null) {
     ui.statusSelect.value = task.status;
     ui.submitBtn.textContent = "Actualizar tarea";
     ui.formStatus.textContent = `Editando: ${task.title}`;
-  } else {
-    editingId = null;
-    ui.form.reset();
-    ui.prioritySelect.value = "media";
-    ui.statusSelect.value = "pendiente";
-    ui.submitBtn.textContent = "Guardar tarea";
-    ui.formStatus.textContent = "";
+    return;
   }
+
+  editingId = null;
+  ui.form.reset();
+  ui.prioritySelect.value = "media";
+  ui.statusSelect.value = "pendiente";
+  ui.submitBtn.textContent = "Guardar tarea";
+  ui.formStatus.textContent = "";
 }
 
-function getPayload() {
+function getPayload(): Omit<Task, "id"> {
   return {
     title: ui.titleInput.value.trim(),
     description: ui.descriptionInput.value.trim(),
@@ -110,7 +111,7 @@ function getPayload() {
   };
 }
 
-function buildQuery() {
+function buildQuery(): string {
   const params = new URLSearchParams();
   if (ui.filterStatus.value) {
     params.set("status", ui.filterStatus.value);
@@ -125,7 +126,7 @@ function buildQuery() {
   return query ? `?${query}` : "";
 }
 
-async function fetchTasks() {
+async function fetchTasks(): Promise<Task[]> {
   const response = await fetch(`${API_BASE}/tasks${buildQuery()}`);
   if (!response.ok) {
     throw new Error("No se pudieron obtener las tareas.");
@@ -133,7 +134,7 @@ async function fetchTasks() {
   return (await response.json()) as Task[];
 }
 
-async function fetchSummary() {
+async function fetchSummary(): Promise<Summary> {
   const response = await fetch(`${API_BASE}/tasks/summary`);
   if (!response.ok) {
     throw new Error("No se pudo obtener el resumen.");
@@ -141,55 +142,88 @@ async function fetchSummary() {
   return (await response.json()) as Summary;
 }
 
-function renderTasks(tasks: Task[]) {
-  ui.tasksBody.innerHTML = "";
+function createTextCell(text: string, className = "py-2 pr-3"): HTMLTableCellElement {
+  const cell = document.createElement("td");
+  cell.className = className;
+  cell.textContent = text;
+  return cell;
+}
+
+function createActionButton(label: string, className: string): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = className;
+  button.textContent = label;
+  return button;
+}
+
+function renderTasks(tasks: Task[]): void {
+  ui.tasksBody.replaceChildren();
+
   tasks.forEach((task) => {
     const row = document.createElement("tr");
     row.className = "border-b last:border-none";
-    row.innerHTML = `
-      <td class="py-2">${task.title}</td>
-      <td class="py-2">${task.subject}</td>
-      <td class="py-2">${task.dueDate}</td>
-      <td class="py-2 capitalize">${task.priority}</td>
-      <td class="py-2">${task.status}</td>
-      <td class="py-2 space-x-2">
-        <button class="edit-btn rounded border border-slate-300 px-2 py-1 text-xs">Editar</button>
-        <button class="delete-btn rounded border border-red-300 px-2 py-1 text-xs text-red-600">
-          Eliminar
-        </button>
-      </td>
-    `;
-    row.querySelector<HTMLButtonElement>(".edit-btn")?.addEventListener("click", () => {
+
+    row.append(
+      createTextCell(task.title),
+      createTextCell(task.subject),
+      createTextCell(task.dueDate),
+      createTextCell(task.priority, "py-2 pr-3 capitalize"),
+      createTextCell(task.status)
+    );
+
+    const actionCell = document.createElement("td");
+    actionCell.className = "flex flex-wrap gap-2 py-2";
+
+    const editButton = createActionButton(
+      "Editar",
+      "rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-100"
+    );
+    editButton.addEventListener("click", () => {
       setEditing(task);
     });
-    row.querySelector<HTMLButtonElement>(".delete-btn")?.addEventListener("click", () => {
+
+    const deleteButton = createActionButton(
+      "Eliminar",
+      "rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+    );
+    deleteButton.addEventListener("click", () => {
       void handleDelete(task.id);
     });
+
+    actionCell.append(editButton, deleteButton);
+    row.append(actionCell);
     ui.tasksBody.appendChild(row);
   });
 
   ui.emptyState.style.display = tasks.length ? "none" : "block";
 }
 
-function renderSummary(summary: Summary) {
+function renderSummary(summary: Summary): void {
   ui.summaryTotal.textContent = summary.total.toString();
   ui.summaryPending.textContent = summary.pendientes.toString();
   ui.summaryFinished.textContent = summary.finalizadas.toString();
   ui.summaryHigh.textContent = summary.alta_prioridad.toString();
 }
 
-async function loadDashboard() {
-  const [tasks, summary] = await Promise.all([fetchTasks(), fetchSummary()]);
-  renderTasks(tasks);
-  renderSummary(summary);
+async function loadDashboard(): Promise<void> {
+  try {
+    const [tasks, summary] = await Promise.all([fetchTasks(), fetchSummary()]);
+    renderTasks(tasks);
+    renderSummary(summary);
+    ui.formStatus.textContent = editingId ? ui.formStatus.textContent : "";
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error inesperado.";
+    ui.formStatus.textContent = message;
+  }
 }
 
-async function handleSubmit(event: SubmitEvent) {
+async function handleSubmit(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const payload = getPayload();
 
   if (!payload.title || !payload.subject || !payload.description || !payload.dueDate) {
-    alert("Completa todos los campos requeridos.");
+    window.alert("Completa todos los campos requeridos.");
     return;
   }
 
@@ -203,8 +237,8 @@ async function handleSubmit(event: SubmitEvent) {
   );
 
   if (!response.ok) {
-    const error = await response.json();
-    alert(error.error || "No se pudo guardar la tarea.");
+    const error = (await response.json()) as { error?: string };
+    window.alert(error.error || "No se pudo guardar la tarea.");
     return;
   }
 
@@ -212,17 +246,19 @@ async function handleSubmit(event: SubmitEvent) {
   await loadDashboard();
 }
 
-async function handleDelete(taskId: string) {
-  const confirmed = window.confirm("¿Eliminar esta tarea?");
+async function handleDelete(taskId: string): Promise<void> {
+  const confirmed = window.confirm("Eliminar esta tarea?");
   if (!confirmed) {
     return;
   }
+
   const response = await fetch(`${API_BASE}/tasks/${taskId}`, { method: "DELETE" });
   if (!response.ok) {
-    const error = await response.json();
-    alert(error.error || "No se pudo eliminar la tarea.");
+    const error = (await response.json()) as { error?: string };
+    window.alert(error.error || "No se pudo eliminar la tarea.");
     return;
   }
+
   if (editingId === taskId) {
     setEditing(null);
   }
