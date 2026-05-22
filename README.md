@@ -1,74 +1,123 @@
 # TaskCampus
 
-Aplicacion web para registrar, consultar, actualizar y eliminar tareas academicas. El frontend
-usa TypeScript con HTML/Tailwind, y el backend esta construido en Python con persistencia en un
-archivo JSON.
+TaskCampus es una aplicacion web para registrar, consultar, actualizar, eliminar y filtrar tareas academicas. El frontend usa HTML, Tailwind y TypeScript; el backend usa Python con Flask y persistencia en un archivo JSON.
+
+El proyecto se organizo siguiendo Spec Driven Development con Spec Kit: primero se documento la especificacion en `specs/taskcampus-spec.md`, luego se implemento el backend, despues el frontend y finalmente se dejo evidencia de ramas, commits y pull request en GitHub.
 
 ## Estructura del repositorio
-```
+
+```text
 taskcampus/
-├── specs/
-│   └── taskcampus-spec.md
-├── frontend/
-│   ├── index.html
-│   ├── src/
-│   └── tsconfig.json
-├── backend/
-│   ├── app.py
-│   ├── requirements.txt
-│   └── data/
-└── .gitignore
+|-- specs/
+|   `-- taskcampus-spec.md
+|-- frontend/
+|   |-- index.html
+|   |-- package.json
+|   |-- tsconfig.json
+|   `-- src/
+|       `-- app.ts
+|-- backend/
+|   |-- app.py
+|   |-- requirements.txt
+|   `-- data/
+|       `-- tasks.json
+|-- README.md
+`-- .gitignore
 ```
-
-## Plan tecnico de desarrollo
-1. Definir especificacion funcional en `specs/taskcampus-spec.md`.
-2. Preparar estructura de carpetas, dependencias y configuracion base.
-3. Implementar API REST en Python con persistencia JSON.
-4. Implementar interfaz en TypeScript con consumo de API.
-5. Probar CRUD, filtros y resumen.
-6. Documentar instalacion y uso en este README.
-
-## Tareas del proyecto
-1. Crear repositorio y estructura inicial.
-2. Implementar modulo de tareas (CRUD + filtros + resumen) en backend.
-3. Implementar interfaz con formulario, filtros y listado en frontend.
-4. Verificar consumo de API desde el navegador.
-5. Registrar commits, ramas y pull request en GitHub.
 
 ## Instalacion del backend
-1. Abrir una terminal y entrar a la carpeta `backend`.
-2. Crear un entorno virtual (opcional) y activarlo.
-3. Instalar dependencias:
+
+1. Entrar a la carpeta del backend:
+
+   ```bash
+   cd backend
    ```
+
+2. Crear y activar un entorno virtual:
+
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+3. Instalar dependencias:
+
+   ```bash
    pip install -r requirements.txt
    ```
+
 4. Ejecutar el servidor:
-   ```
+
+   ```bash
    python app.py
    ```
+
 El backend queda disponible en `http://localhost:5000`.
 
 ## Instalacion del frontend
-1. Abrir una terminal en la carpeta `frontend`.
-2. Instalar dependencias:
+
+1. Entrar a la carpeta del frontend:
+
+   ```bash
+   cd frontend
    ```
+
+2. Instalar dependencias:
+
+   ```bash
    npm install
    ```
+
 3. Compilar TypeScript:
-   ```
+
+   ```bash
    npm run build
    ```
-4. Abrir `frontend/index.html` en el navegador (o usar una extension de servidor local).
 
-## Endpoints disponibles
+4. Servir la carpeta del frontend:
+
+   ```bash
+   python -m http.server 5173
+   ```
+
+5. Abrir `http://localhost:5173` en el navegador.
+
+## Endpoints
+
 | Metodo | Ruta | Descripcion |
 | --- | --- | --- |
-| GET | /tasks | Listar tareas (filtros: status, priority, subject) |
-| GET | /tasks/{id} | Consultar tarea |
-| POST | /tasks | Crear tarea |
-| PUT | /tasks/{id} | Actualizar tarea |
-| DELETE | /tasks/{id} | Eliminar tarea |
-| GET | /tasks/summary | Mostrar resumen estadistico |
+| GET | `/tasks` | Lista tareas. Acepta filtros `status`, `priority` y `subject`. |
+| GET | `/tasks/{id}` | Consulta una tarea por identificador. |
+| POST | `/tasks` | Crea una tarea. |
+| PUT | `/tasks/{id}` | Actualiza una tarea. |
+| DELETE | `/tasks/{id}` | Elimina una tarea. |
+| GET | `/tasks/summary` | Devuelve total, pendientes, finalizadas y alta prioridad. |
 
-## Integrantes del grupo
-- Brandon (brandon0405)
+## Formato de tarea
+
+```json
+{
+  "title": "Informe de laboratorio",
+  "description": "Preparar resultados y conclusiones",
+  "subject": "Fisica",
+  "dueDate": "2026-06-10",
+  "priority": "alta",
+  "status": "pendiente"
+}
+```
+
+Valores permitidos:
+
+- `priority`: `baja`, `media`, `alta`
+- `status`: `pendiente`, `en proceso`, `finalizada`
+
+## Evidencia GitHub
+
+- Repositorio: `https://github.com/brandon0405/TaskCampus`
+- Rama base: `main`
+- Rama de implementacion: `feature/taskcampus-sdd-complete`
+- Pull request: `https://github.com/brandon0405/TaskCampus/pull/2`
+
+## Integrantes
+
+- Brandon (`brandon0405`)
