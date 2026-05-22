@@ -115,8 +115,8 @@ Valores permitidos:
 
 - Repositorio: `https://github.com/brandon0405/TaskCampus`
 - Rama base: `main`
-- Rama de implementacion: `feature/taskcampus-implementation`
-- Pull request: se genera desde la rama de implementacion hacia `main`.
+- Rama de implementacion: `feature/taskcampus-sdd-complete`
+- Pull request: `https://github.com/brandon0405/TaskCampus/pull/2`
 
 ## Integrantes
 
