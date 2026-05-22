@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskCampus</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.5/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-6xl space-y-8 p-6">
+      <header class="space-y-2">
+        <h1 class="text-3xl font-bold">TaskCampus</h1>
+        <p class="text-slate-600">
+          Gestiona tus tareas academicas con prioridades, estados y fechas de entrega.
+        </p>
+      </header>
+
+      <section class="rounded-lg bg-white p-6 shadow">
+        <h2 class="text-xl font-semibold">Registrar o editar tarea</h2>
+        <form id="task-form" class="mt-4 grid gap-4 md:grid-cols-2">
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="title">Titulo</label>
+            <input
+              id="title"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+              type="text"
+              required
+            />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="subject">Asignatura</label>
+            <input
+              id="subject"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+              type="text"
+              required
+            />
+          </div>
+          <div class="space-y-1 md:col-span-2">
+            <label class="text-sm font-medium" for="description">Descripcion</label>
+            <textarea
+              id="description"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="dueDate">Fecha de entrega</label>
+            <input
+              id="dueDate"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+              type="date"
+              required
+            />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="priority">Prioridad</label>
+            <select
+              id="priority"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+            >
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="status">Estado</label>
+            <select
+              id="status"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+            >
+              <option value="pendiente" selected>Pendiente</option>
+              <option value="en proceso">En proceso</option>
+              <option value="finalizada">Finalizada</option>
+            </select>
+          </div>
+          <div class="flex items-end gap-3 md:col-span-2">
+            <button
+              id="submit-btn"
+              type="submit"
+              class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Guardar tarea
+            </button>
+            <button
+              id="cancel-btn"
+              type="button"
+              class="rounded border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100"
+            >
+              Cancelar edicion
+            </button>
+            <span id="form-status" class="text-sm text-slate-500"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-lg bg-white p-6 shadow">
+        <h2 class="text-xl font-semibold">Filtros</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-4">
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="filter-status">Estado</label>
+            <select
+              id="filter-status"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+            >
+              <option value="">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en proceso">En proceso</option>
+              <option value="finalizada">Finalizada</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="filter-priority">Prioridad</label>
+            <select
+              id="filter-priority"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+            >
+              <option value="">Todas</option>
+              <option value="baja">Baja</option>
+              <option value="media">Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium" for="filter-subject">Asignatura</label>
+            <input
+              id="filter-subject"
+              class="w-full rounded border border-slate-200 px-3 py-2"
+              type="text"
+              placeholder="Ej: Algebra"
+            />
+          </div>
+          <div class="flex items-end gap-3">
+            <button
+              id="filter-btn"
+              class="rounded bg-slate-800 px-4 py-2 text-white hover:bg-slate-900"
+              type="button"
+            >
+              Aplicar
+            </button>
+            <button
+              id="clear-filters-btn"
+              class="rounded border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100"
+              type="button"
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-lg bg-white p-6 shadow">
+        <h2 class="text-xl font-semibold">Resumen</h2>
+        <div
+          id="summary"
+          class="mt-4 grid gap-4 text-center sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <div class="rounded bg-slate-100 p-4">
+            <p class="text-sm text-slate-600">Total de tareas</p>
+            <p id="summary-total" class="text-2xl font-semibold">0</p>
+          </div>
+          <div class="rounded bg-slate-100 p-4">
+            <p class="text-sm text-slate-600">Pendientes</p>
+            <p id="summary-pending" class="text-2xl font-semibold">0</p>
+          </div>
+          <div class="rounded bg-slate-100 p-4">
+            <p class="text-sm text-slate-600">Finalizadas</p>
+            <p id="summary-finished" class="text-2xl font-semibold">0</p>
+          </div>
+          <div class="rounded bg-slate-100 p-4">
+            <p class="text-sm text-slate-600">Alta prioridad</p>
+            <p id="summary-high" class="text-2xl font-semibold">0</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-lg bg-white p-6 shadow">
+        <h2 class="text-xl font-semibold">Listado de tareas</h2>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="border-b text-left text-slate-600">
+                <th class="py-2">Titulo</th>
+                <th class="py-2">Asignatura</th>
+                <th class="py-2">Fecha</th>
+                <th class="py-2">Prioridad</th>
+                <th class="py-2">Estado</th>
+                <th class="py-2">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-body"></tbody>
+          </table>
+        </div>
+        <p id="empty-state" class="mt-4 text-sm text-slate-500">
+          No hay tareas registradas.
+        </p>
+      </section>
+    </div>
+
+    <script type="module" src="./dist/app.js"></script>
+  </body>
+</html>
